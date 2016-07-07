@@ -1,18 +1,29 @@
 
 CFLAGS += -Wall -Werror 
+LFLAGS += -lcrypto
 
-%.o:%.c
-	$(CC) -c $(CFLAGS) -o $@ $^
+TEST_LIST = basic_cipher stream_hash
 
-cipher_basic: examples/basic_cipher.o
-	$(CC) $(CFLAGS) -o $@ $^ -lcrypto
+# ARG 1: test name
+define gen_test_rule
+$(1).build: examples/$(1).c
+	$(CC) $(CFLAGS) -o $(1) examples/$(1).c $(LFLAGS)
 
-build: cipher_basic
+$(1).run: $(1).build
+	./$(1)
 
-test: build
-	./cipher_basic
+$(1).clean: 
+	rm -f ./$(1)
 
-clean: 
-	rm -f ./cipher_basic ./examples/basic_cipher.o
+test: $(1).run
+
+build: $(1).build
+
+clean: $(1).clean
+
+endef
+
+$(foreach test,$(TEST_LIST),$(eval $(call gen_test_rule,$(test))))
+
 
 .PHONY: test build clean

@@ -46,8 +46,9 @@ int main(void)
      for (i = 0; i < input_size; ++i) input[i] = rand(); 
 
 
-#if 0
-    ret = write(opfd, input, input_size); 
+#if 1
+    //ret = write(opfd, input, input_size); 
+    ret = send(opfd, input, input_size, MSG_MORE); 
     assert(ret > 0 && "write failed");
 #else
   struct msghdr msg = {};

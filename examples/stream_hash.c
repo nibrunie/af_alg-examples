@@ -46,25 +46,8 @@ int main(void)
      for (i = 0; i < input_size; ++i) input[i] = rand(); 
 
 
-#if 1
-    //ret = write(opfd, input, input_size); 
     ret = send(opfd, input, input_size, MSG_MORE); 
     assert(ret > 0 && "write failed");
-#else
-  struct msghdr msg = {};
-  struct iovec iov;
-  msg.msg_control = NULL;
-  msg.msg_controllen = 0;
-  iov.iov_base = input;
-  iov.iov_len = input_size;
-
-  msg.msg_flags = MSG_MORE;
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
-
-  sendmsg(opfd, &msg, 0);
-
-#endif
 
     unsigned char last_digest[32];
     SHA256(input, input_size, last_digest);
